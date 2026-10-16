@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Mahal Kita, Libat nga Lang &middot; CyberSurfer CTF</title>
+<style>
+  :root {
+    --bg: #070912;
+    --panel: rgba(18, 22, 38, 0.82);
+    --panel-2: rgba(28, 34, 56, 0.7);
+    --line: rgba(120, 140, 200, 0.18);
+    --text: #e7ecff;
+    --muted: #8b96bd;
+    --accent: #38f0c8;
+    --accent-2: #7b6cff;
+    --pink: #ff5f9e;
+    --flag: #ffd166;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body { height: 100%; }
+
+  body {
+    margin: 0;
+    min-height: 100%;
+    color: var(--text);
+    font-family: "Segoe UI", Inter, system-ui, -apple-system, Roboto, Arial, sans-serif;
+    background:
+      radial-gradient(1100px 600px at 12% -10%, rgba(123, 108, 255, 0.22), transparent 60%),
+      radial-gradient(900px 600px at 110% 10%, rgba(56, 240, 200, 0.14), transparent 55%),
+      radial-gradient(800px 700px at 50% 120%, rgba(255, 95, 158, 0.12), transparent 60%),
+      var(--bg);
+    background-attachment: fixed;
+    display: flex;
+    justify-content: center;
+    padding: 40px 18px 64px;
+  }
+
+  .wrap { width: 100%; max-width: 980px; }
+
+  /* ---------- Header ---------- */
+  header.top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 22px;
+    flex-wrap: wrap;
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-weight: 700;
+    letter-spacing: 0.4px;
+  }
+
+  .logo {
+    width: 40px; height: 40px;
+    border-radius: 12px;
+    display: grid; place-items: center;
+    background: linear-gradient(135deg, var(--accent), var(--accent-2));
+    box-shadow: 0 8px 30px rgba(56, 240, 200, 0.28);
+    font-size: 20px;
+  }
+
+  .brand small {
+    display: block;
+    font-weight: 500;
+    color: var(--muted);
+    font-size: 12px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+
+  .badge {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--accent);
+    border: 1px solid rgba(56, 240, 200, 0.35);
+    background: rgba(56, 240, 200, 0.08);
+    padding: 7px 14px;
+    border-radius: 999px;
+  }
+
+  /* ---------- Player card ---------- */
+  .card {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 22px;
+    backdrop-filter: blur(14px);
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.55);
+    overflow: hidden;
+  }
+
+  .player-head {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 20px 22px;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .art {
+    width: 64px; height: 64px;
+    flex: none;
+    border-radius: 16px;
+    background:
+      conic-gradient(from 210deg, #7b6cff, #38f0c8, #ff5f9e, #7b6cff);
+    display: grid; place-items: center;
+    position: relative;
+    box-shadow: 0 10px 30px rgba(123, 108, 255, 0.4);
+  }
+  .art::after {
+    content: "";
+    position: absolute; inset: 0;
+    border-radius: 16px;
+    background: radial-gradient(circle at 50% 55%, rgba(0,0,0,.65), transparent 62%);
+  }
+  .art span {
+    position: relative; z-index: 1; font-size: 26px;
+    filter: drop-shadow(0 2px 6px rgba(0,0,0,.6));
+  }
+
+  .track-meta { min-width: 0; }
+  .track-meta h1 {
+    margin: 0 0 4px;
+    font-size: 20px;
+    line-height: 1.25;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .track-meta p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 13.5px;
+  }
+  .track-meta .tag {
+    color: var(--accent);
+    font-weight: 600;
+  }
+
+  .player-body { padding: 18px 22px 22px; }
+
+  video {
+    width: 100%;
+    display: block;
+    border-radius: 14px;
+    background: #000;
+    outline: none;
+    box-shadow: 0 18px 50px rgba(0, 0, 0, 0.6);
+  }
+
+  .controls-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 16px;
+    flex-wrap: wrap;
+  }
+
+  .btn {
+    appearance: none;
+    border: 1px solid var(--line);
+    background: var(--panel-2);
+    color: var(--text);
+    padding: 11px 16px;
+    border-radius: 12px;
+    font-size: 13.5px;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: transform .12s ease, border-color .12s ease, background .12s ease;
+  }
+  .btn:hover { transform: translateY(-1px); border-color: rgba(56,240,200,.5); }
+  .btn.primary {
+    border-color: transparent;
+    background: linear-gradient(135deg, var(--accent), var(--accent-2));
+    color: #071018;
+  }
+  .controls-row .spacer { flex: 1; }
+
+  /* ---------- Challenge ---------- */
+  .challenge {
+    margin-top: 26px;
+    padding: 24px;
+  }
+
+  .challenge h2 {
+    margin: 0 0 6px;
+    font-size: 17px;
+    letter-spacing: 0.3px;
+  }
+  .challenge h2 .kicker {
+    color: var(--accent);
+    font-size: 11.5px;
+    font-weight: 800;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    display: block;
+    margin-bottom: 8px;
+  }
+
+  .story { color: #c3cbe8; line-height: 1.7; font-size: 14.5px; }
+  .story p { margin: 0 0 12px; }
+  .story em { color: var(--text); font-style: normal; font-weight: 600; }
+
+  .facts {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 12px;
+    margin: 20px 0 4px;
+  }
+  .fact {
+    background: var(--panel-2);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 14px 16px;
+  }
+  .fact .k {
+    font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase;
+    color: var(--muted); margin-bottom: 6px;
+  }
+  .fact .v { font-weight: 700; font-size: 14px; }
+  .fact .v.mono { font-family: ui-monospace, "Cascadia Code", Consolas, monospace; color: var(--accent); }
+
+  details.hint {
+    margin-top: 18px;
+    border: 1px dashed rgba(120, 140, 200, 0.35);
+    border-radius: 14px;
+    background: rgba(255, 209, 102, 0.05);
+    padding: 4px 16px;
+  }
+  details.hint summary {
+    cursor: pointer;
+    padding: 12px 0;
+    font-weight: 700;
+    color: var(--flag);
+    list-style: none;
+    font-size: 14px;
+  }
+  details.hint summary::-webkit-details-marker { display: none; }
+  details.hint summary::before { content: "💡 "; }
+  details.hint p { margin: 0 0 14px; color: #d8cfa8; line-height: 1.65; font-size: 13.5px; }
+  details.hint code {
+    background: rgba(0,0,0,.4); padding: 2px 6px; border-radius: 6px;
+    font-family: ui-monospace, Consolas, monospace; color: var(--accent);
+  }
+
+  /* ---------- Flag submit ---------- */
+  .submit-box {
+    margin-top: 20px;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .submit-box input {
+    flex: 1;
+    min-width: 240px;
+    background: rgba(0, 0, 0, 0.35);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 12px 14px;
+    color: var(--text);
+    font-family: ui-monospace, Consolas, monospace;
+    font-size: 13.5px;
+    outline: none;
+  }
+  .submit-box input:focus { border-color: rgba(56,240,200,.55); }
+  #submit-msg {
+    margin-top: 12px;
+    font-size: 13.5px;
+    font-weight: 600;
+    min-height: 18px;
+  }
+  #submit-msg.ok { color: var(--accent); }
+  #submit-msg.warn { color: var(--flag); }
+  #submit-msg.bad { color: var(--pink); }
+
+  footer.note {
+    text-align: center;
+    color: var(--muted);
+    font-size: 12.5px;
+    margin-top: 26px;
+    line-height: 1.7;
+  }
+  footer.note code {
+    color: #aab4dd;
+    font-family: ui-monospace, Consolas, monospace;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top">
+    <div class="brand">
+      <div class="logo">&#127925;</div>
+      <div>
+        SIGURADO NA AN KAWATAN!
+      </div>
+    </div>
+    <div class="badge">Track Viewer</div>
+  </header>
+
+  <!-- ================= PLAYER ================= -->
+  <section class="card">
+    <div class="player-head">
+      <div class="art"><span>&#9835;</span></div>
+      <div class="track-meta">
+        <h1>Mahal Kita, Libat nga Lang</h1>
+        <p>Unknown Artist &middot; <span class="tag">Single</span> &middot; 2026</p>
+      </div>
+    </div>
+
+    <div class="player-body">
+      <video id="track" controls preload="metadata" playsinline
+             src="Mahal%20Kita%2C%20Libat%20nga%20Lang.mp4">
+        Your browser does not support the video tag.
+      </video>
+
+      <div class="controls-row">
+        <button class="btn primary" id="playBtn">&#9654;&nbsp; Play</button>
+        <a class="btn" href="Mahal%20Kita%2C%20Libat%20nga%20Lang.mp4" download>
+          &#11015;&nbsp; Download track
+        </a>
+        <div class="spacer"></div>
+        <button class="btn" id="muteBtn">&#128266;&nbsp; Mute</button>
+      </div>
+    </div>
+  </section>
+
+<script>
+  const video   = document.getElementById('track');
+  const playBtn = document.getElementById('playBtn');
+  const muteBtn = document.getElementById('muteBtn');
+
+  playBtn.addEventListener('click', () => {
+    if (video.paused) { video.play(); } else { video.pause(); }
+  });
+
+  video.addEventListener('play',  () => { playBtn.innerHTML = '&#10074;&#10074;&nbsp; Pause'; });
+  video.addEventListener('pause', () => { playBtn.innerHTML = '&#9654;&nbsp; Play'; });
+  video.addEventListener('ended', () => { playBtn.innerHTML = '&#9654;&nbsp; Play'; });
+
+  muteBtn.addEventListener('click', () => {
+    video.muted = !video.muted;
+    muteBtn.innerHTML = video.muted ? '&#128263;&nbsp; Unmute' : '&#128266;&nbsp; Mute';
+  });
+
+  // Flag submission: format check only. The real flag lives in the file's
+  // metadata and is validated by the CTF platform, not by this page.
+  const input  = document.getElementById('flagInput');
+  const subBtn = document.getElementById('submitBtn');
+  const msg    = document.getElementById('submit-msg');
+
+  function checkFlag() {
+    const value = input.value.trim();
+    if (!value) {
+      msg.className = 'warn';
+      msg.textContent = 'Enter a flag first.';
+      return;
+    }
+    if (/^cybersurferCTF\{.+\}$/.test(value)) {
+      msg.className = 'ok';
+      msg.textContent = 'Format looks good! Submit it on the CTF platform to score.';
+    } else {
+      msg.className = 'bad';
+      msg.textContent = 'That does not match the expected format: cybersurferCTF{...}';
+    }
+  }
+
+  subBtn.addEventListener('click', checkFlag);
+  input.addEventListener('keydown', (e) => { if (e.key === 'Enter') checkFlag(); });
+</script>
+</body>
+</html>
